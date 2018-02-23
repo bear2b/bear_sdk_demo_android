@@ -1,0 +1,80 @@
+import java.text.SimpleDateFormat
+
+apply plugin: 'com.android.application'
+
+ext.supportLibs_version = '25.3.1'
+ext.googlePlay_version = '11.6.0'
+ext.bearsdk_version = '2.0.0'
+
+android {
+    compileSdkVersion 25
+
+    defaultConfig {
+        applicationId "com.bear2b.sampleapp"
+        minSdkVersion 19
+        targetSdkVersion 25
+        versionCode getTimeStamp()
+        versionName bearsdk_version + "-" + getTimeStamp()
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    splits {
+        abi {
+            enable true
+            reset()
+            include "armeabi-v7a"
+            universalApk false
+        }
+    }
+
+    packagingOptions {
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'inputList.txt'
+        exclude 'LICENSE'
+        exclude 'LICENSE.txt'
+        exclude 'META-INF/services/javax.annotation.processing.Processor'
+        exclude 'asm-license.txt'
+        exclude 'NOTICE'
+        exclude 'mockito-extensions/org.mockito.plugins.MockMaker'
+    }
+}
+
+configurations.all {
+    // check for updates every build
+    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+}
+
+dependencies {
+    compile("com.bear:bearsdk:$bearsdk_version@aar") {
+        transitive = true
+    }
+
+    // FireBase
+    compile "com.google.firebase:firebase-messaging:$googlePlay_version"
+
+    // Support
+    compile "com.android.support:support-annotations:$supportLibs_version"
+    compile "com.android.support:appcompat-v7:$supportLibs_version"
+    compile "com.android.support:support-v13:$supportLibs_version"
+    compile "com.android.support:design:$supportLibs_version"
+    compile "com.android.support:cardview-v7:$supportLibs_version"
+
+    // Runtime Permissions
+    compile 'com.github.hotchemi:permissionsdispatcher:2.4.0'
+    annotationProcessor 'com.github.hotchemi:permissionsdispatcher-processor:2.4.0'
+}
+
+static def getTimeStamp() {
+    def df = new SimpleDateFormat("yyMMddHHmm")
+    return df.format(new Date()).toInteger()
+}
+
+apply plugin: 'com.google.gms.google-services'

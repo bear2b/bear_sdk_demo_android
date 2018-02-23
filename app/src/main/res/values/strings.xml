@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">SampleApp</string>
+    <string name="screenshot">screenshot</string>
+    <string name="start_scan">Start scan</string>
+    <string name="switch_flash">Switch flash</string>
+    <string name="show_marker">Show marker</string>
+    <string name="clean_view">Clean view</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="menu.history">History</string>
+    <string name="menu.example_activity">Example Activity</string>
+    <string name="history.toolbar_detailed_description">You\'ve scanned these pages</string>
+    <string name="show_sample_pausing_arview_fragment">Show sample pausing ArView fragment</string>
+    <string name="sample_fragment_text">Sample fragment to show how is pausing ArView works.\n \n If you call this fragment while some ArVideo or sound are playing - it will pause video/sound without pausing ArActivity. Notice that there is white background - this is how ArActivity looks like when it stopped.</string>
+    <string name="aractivity">ArActivity</string>
+    <string name="basic_sample">Basic Sample</string>
+    <string name="advanced_sample">Advanced Sample</string>
+</resources>

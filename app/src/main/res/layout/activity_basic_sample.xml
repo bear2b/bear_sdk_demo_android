@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <Button
+        android:id="@+id/btnStartScan"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal|bottom"
+        android:layout_marginBottom="40dp"
+        android:text="@string/start_scan" />
+
+    <Button
+        android:id="@+id/cleanView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|top"
+        android:layout_marginEnd="40dp"
+        android:text="@string/clean_view"
+        android:visibility="gone" />
+
+</FrameLayout>

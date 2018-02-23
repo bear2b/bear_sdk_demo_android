@@ -1,0 +1,14 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_history"
+            android:icon="@drawable/ic_history"
+            android:title="@string/menu.history" />
+    </group>
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_example_activity"
+            android:icon="@drawable/ic_star_24dp"
+            android:title="@string/menu.example_activity" />
+    </group>
+</menu>
