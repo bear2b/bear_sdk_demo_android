@@ -2,9 +2,15 @@
 
 ---
 
+## [2.0.4](https://github.com/bear2b/bear_sdk_demo_android/releases/tag/2.0.4)
+
+# Fixes:
+* `openssl` issue
+* portrait video is stretched in landscape orientation
+
 ## [2.0.3](https://github.com/bear2b/bear_sdk_demo_android/releases/tag/2.0.3)
 
 # Improvements:
-* reduce sdk size (~3Mo)
+* reduced sdk size
 # Fixes:
-* fix `openssl` issue
+* `openssl` issue
