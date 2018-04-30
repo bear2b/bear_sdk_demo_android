@@ -4,7 +4,7 @@ apply plugin: 'com.android.application'
 
 ext.supportLibs_version = '25.3.1'
 ext.googlePlay_version = '11.6.0'
-ext.bearsdk_version = '2.0.4'
+ext.bearsdk_version = '2.0.5'
 
 android {
     compileSdkVersion 25
