@@ -1,4 +1,4 @@
-## Latest BEARSDK build 2.0.5
+## Latest BEARSDK build 2.0.9
 Detailed explanations can be found at:
 https://developer.bear2b.com/docs/sdk-android/
 
@@ -13,7 +13,7 @@ maven {
 }
 
 dependencies {
-    compile('com.bear:bearsdk:2.0.5@aar') {
+    compile('com.bear:bearsdk:2.0.9@aar') {
         transitive = true
     }
 }

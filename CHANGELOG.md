@@ -2,6 +2,11 @@
 
 ---
 
+## [2.0.9](https://github.com/bear2b/bear_sdk_demo_android/releases/tag/2.0.9)
+
+# Fixes:
+* audio player crash
+
 ## [2.0.5](https://github.com/bear2b/bear_sdk_demo_android/releases/tag/2.0.5)
 
 # Deprecated:
