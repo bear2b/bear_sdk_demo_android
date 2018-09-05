@@ -4,13 +4,7 @@ https://developer.bear2b.com/docs/sdk-android/
 
 ## Installation
 ```groovy
-maven {
-    url 's3://mobile-dev.bear2b.com/bearsdk'
-    credentials(AwsCredentials) {
-        accessKey "AKIAIDDEJY37ZIBU3Q4A"
-        secretKey "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"
-    }
-}
+maven { url 'https://s3-eu-west-1.amazonaws.com/mobile-dev.bear2b.com/bearsdk' }
 
 dependencies {
     compile('com.bear:bearsdk:2.0.9@aar') {
