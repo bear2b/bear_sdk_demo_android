@@ -2,6 +2,11 @@
 
 ---
 
+## [2.0.10](https://github.com/bear2b/bear_sdk_demo_android/releases/tag/2.0.10)
+
+#### Fixes:
+* improved video streaming stability
+
 ## [2.0.9](https://github.com/bear2b/bear_sdk_demo_android/releases/tag/2.0.9)
 
 # Fixes:
