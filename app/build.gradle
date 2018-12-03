@@ -1,27 +1,47 @@
 import java.text.SimpleDateFormat
 
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
 
-ext.supportLibs_version = '25.3.1'
+ext.supportLibs_version = '28.0.0'
 ext.googlePlay_version = '11.6.0'
 ext.bearsdk_version = '2.0.10'
 
 android {
-    compileSdkVersion 25
+    compileSdkVersion 28
 
     defaultConfig {
         applicationId "com.bear2b.sampleapp"
         minSdkVersion 19
-        targetSdkVersion 25
+        targetSdkVersion 27
         versionCode getTimeStamp()
         versionName bearsdk_version + "-" + getTimeStamp()
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
+    }
+
+    kapt {
+        generateStubs = true
     }
 
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    flavorDimensions "lang"
+    productFlavors {
+        java {
+            dimension "lang"
+        }
+        kotlin {
+            dimension "lang"
+            versionNameSuffix "-kt"
+            applicationIdSuffix ".kt"
         }
     }
 
@@ -53,23 +73,28 @@ configurations.all {
 }
 
 dependencies {
-    compile("com.bear:bearsdk:$bearsdk_version@aar") {
+    implementation("com.bear:bearsdk:$bearsdk_version@aar") {
         transitive = true
     }
 
     // FireBase
-    compile "com.google.firebase:firebase-messaging:$googlePlay_version"
+    implementation "com.google.firebase:firebase-messaging:$googlePlay_version"
 
     // Support
-    compile "com.android.support:support-annotations:$supportLibs_version"
-    compile "com.android.support:appcompat-v7:$supportLibs_version"
-    compile "com.android.support:support-v13:$supportLibs_version"
-    compile "com.android.support:design:$supportLibs_version"
-    compile "com.android.support:cardview-v7:$supportLibs_version"
+    implementation "com.android.support:support-annotations:$supportLibs_version"
+    implementation "com.android.support:appcompat-v7:$supportLibs_version"
+    implementation "com.android.support:support-v13:$supportLibs_version"
+    implementation "com.android.support:design:$supportLibs_version"
+    implementation "com.android.support:cardview-v7:$supportLibs_version"
 
     // Runtime Permissions
-    compile 'com.github.hotchemi:permissionsdispatcher:2.4.0'
+    implementation 'com.github.hotchemi:permissionsdispatcher:2.4.0'
     annotationProcessor 'com.github.hotchemi:permissionsdispatcher-processor:2.4.0'
+    kapt 'com.github.hotchemi:permissionsdispatcher-processor:2.4.0'
+
+    implementation 'com.android.support:multidex:1.0.3'
+
+    kotlinImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
 
 static def getTimeStamp() {

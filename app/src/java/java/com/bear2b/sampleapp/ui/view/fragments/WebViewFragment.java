@@ -18,7 +18,6 @@ import com.bear2b.sampleapp.R;
 
 public class WebViewFragment extends Fragment {
     String url;
-    View customView;
 
     WebChromeClient client;
 
@@ -75,31 +74,16 @@ public class WebViewFragment extends Fragment {
     public void onPause() {
         super.onPause();
         getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        if (customView != null) {
-            client.onHideCustomView();
-        }
+        client.onHideCustomView();
         webView.onPause();
         webView.stopLoading();
-    }
-
-    @Override
-    public void onStop() {
-
-        super.onStop();
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
     }
 
     @Override
     public void onResume() {
         super.onResume();
         webView.onResume();
-        if (customView != null) {
-            getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
-        }
+        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
     }
 
     @Override

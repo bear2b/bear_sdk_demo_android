@@ -1,10 +1,10 @@
 package com.bear2b.sampleapp;
 
-import android.app.Application;
+import android.support.multidex.MultiDexApplication;
 
 import com.bear.common.sdk.BearSdk;
 
-public class App extends Application {
+public class App extends MultiDexApplication {
 
     @Override
     public void onCreate() {
