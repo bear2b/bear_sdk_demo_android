@@ -68,11 +68,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoStatusBar" />
 
-        <service android:name="com.bear2b.sampleapp.FcmInstanceIdService">
-            <intent-filter>
-                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
-            </intent-filter>
-        </service>
         <service android:name="com.bear2b.sampleapp.FCMService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
