@@ -24,6 +24,10 @@ public class BasicSampleActivity extends ArActivity {
 
     private BearCallback newCallback = new BearCallback() {
         @Override
+        public void onArViewInitialized() {
+        }
+
+        @Override
         public void onMarkerRecognized(final int i, @NonNull final List<Integer> list) {
             startScan.setVisibility(View.GONE);
             cleanView.setVisibility(View.VISIBLE);
@@ -39,19 +43,19 @@ public class BasicSampleActivity extends ArActivity {
         }
 
         @Override
-        public void onError(@NonNull final Throwable t, final boolean isMarkerFromScan) {
+        public void onError(@NonNull final Throwable t) {
         }
     };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getHandler().registerBearCallback(newCallback);
+        getBearHandler().registerBearCallback(newCallback);
     }
 
     @Override
     protected void onDestroy() {
-        getHandler().unregisterBearCallback(newCallback);
+        getBearHandler().unregisterBearCallback(newCallback);
         super.onDestroy();
     }
 
@@ -60,19 +64,19 @@ public class BasicSampleActivity extends ArActivity {
         View view = getLayoutInflater().inflate(R.layout.activity_basic_sample, null, false);
         addContentView(view, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
-        startScan = (Button) findViewById(R.id.btnStartScan);
+        startScan = findViewById(R.id.btnStartScan);
         startScan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getHandler().startScan();
+                getBearHandler().startScan();
             }
         });
 
-        cleanView = (Button) findViewById(R.id.cleanView);
+        cleanView = findViewById(R.id.cleanView);
         cleanView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getHandler().cleanView();
+                getBearHandler().cleanView();
                 markerFound = false;
                 cleanView.setVisibility(View.GONE);
                 startScan.setVisibility(View.VISIBLE);
@@ -89,10 +93,10 @@ public class BasicSampleActivity extends ArActivity {
 
     @Override
     public void onBackPressed() {
-        if (getHandler().isScanRunning()) {
-            getHandler().stopScan();
+        if (getBearHandler().isScanRunning()) {
+            getBearHandler().stopScan();
         } else if (markerFound) {
-            getHandler().cleanView();
+            getBearHandler().cleanView();
             markerFound = false;
             cleanView.setVisibility(View.GONE);
             startScan.setVisibility(View.VISIBLE);

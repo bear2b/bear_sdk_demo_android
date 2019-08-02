@@ -18,6 +18,8 @@ class BasicSampleActivity : ArActivity() {
 
     private var newCallback = object : BearCallback {
 
+        override fun onArViewInitialized() {}
+
         override fun onMarkerRecognized(markerId: Int, @NonNull assetsId: List<Int>) {
             btnStartScan.visibility = View.GONE
             cleanView.visibility = View.VISIBLE
@@ -28,16 +30,16 @@ class BasicSampleActivity : ArActivity() {
 
         override fun onAssetClicked(assetId: Int)  {}
 
-        override fun onError(@NonNull error: Throwable, isMarkerFromScan: Boolean)  {}
+        override fun onError(@NonNull error: Throwable)  {}
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        handler.registerBearCallback(newCallback)
+        bearHandler.registerBearCallback(newCallback)
     }
 
     override fun onDestroy() {
-        handler.unregisterBearCallback(newCallback)
+        bearHandler.unregisterBearCallback(newCallback)
         super.onDestroy()
     }
 
@@ -45,10 +47,10 @@ class BasicSampleActivity : ArActivity() {
         val view = layoutInflater.inflate(R.layout.activity_basic_sample, null, false)
         addContentView(view, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT))
 
-        btnStartScan.setOnClickListener { handler.startScan() }
+        btnStartScan.setOnClickListener { bearHandler.startScan() }
 
         cleanView.setOnClickListener {
-            handler.cleanView()
+            bearHandler.cleanView()
             markerFound = false
             cleanView.visibility = View.GONE
             btnStartScan.visibility = View.VISIBLE
@@ -62,9 +64,9 @@ class BasicSampleActivity : ArActivity() {
     }
 
     override fun onBackPressed() = when {
-        handler.isScanRunning() -> handler.stopScan()
+        bearHandler.isScanRunning() -> bearHandler.stopScan()
         markerFound -> {
-            handler.cleanView()
+            bearHandler.cleanView()
             markerFound = false
             cleanView.visibility = View.GONE
             btnStartScan.visibility = View.VISIBLE

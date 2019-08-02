@@ -17,15 +17,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.bear.common.sdk.BearHandler;
+import com.bear.common.sdk.IBearHandler;
 import com.bear.common.sdk.listeners.flash.FlashStatus;
 import com.bear.common.sdk.listeners.flash.FlashStatusListener;
-import com.bear.common.sdk.listeners.network.NetworkStatus;
-import com.bear.common.sdk.listeners.network.NetworkStatusListener;
 import com.bear.common.sdk.ui.activities.main.ArActivity;
 import com.bear2b.sampleapp.R;
-import com.bear2b.sampleapp.ui.view.activities.ExampleActivity;
 import com.bear2b.sampleapp.ui.view.activities.AdvancedSampleActivity;
+import com.bear2b.sampleapp.ui.view.activities.ExampleActivity;
 
 public class MainFragment extends Fragment implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -33,12 +31,12 @@ public class MainFragment extends Fragment implements NavigationView.OnNavigatio
     Toolbar toolbar;
     NavigationView nvMain;
     ActionBarDrawerToggle toggle;
-    BearHandler handler;
+    IBearHandler bearHandler;
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        handler = ((AdvancedSampleActivity) getActivity()).getHandler();
+        bearHandler = ((AdvancedSampleActivity) getActivity()).getBearHandler();
     }
 
     @Nullable
@@ -46,13 +44,6 @@ public class MainFragment extends Fragment implements NavigationView.OnNavigatio
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.main_fragment, container, false);
     }
-
-    NetworkStatusListener networkListener = new NetworkStatusListener() {
-        @Override
-        public void onStatusChanged(@NonNull NetworkStatus networkStatus) {
-            Toast.makeText(getActivity(), "networkStatus = " + networkStatus.name(), Toast.LENGTH_SHORT).show();
-        }
-    };
 
     FlashStatusListener flashListener = new FlashStatusListener() {
         @Override
@@ -67,16 +58,16 @@ public class MainFragment extends Fragment implements NavigationView.OnNavigatio
         view.findViewById(R.id.btnStartScan).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                handler.startScan();
+                bearHandler.startScan();
             }
         });
         view.findViewById(R.id.btnFlash).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (handler.isFlashEnabled()) {
-                    handler.disableFlash();
+                if (bearHandler.isFlashEnabled()) {
+                    bearHandler.disableFlash();
                 } else {
-                    handler.enableFlash();
+                    bearHandler.enableFlash();
                 }
             }
         });
@@ -84,16 +75,16 @@ public class MainFragment extends Fragment implements NavigationView.OnNavigatio
         view.findViewById(R.id.btnMarker).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (handler.isScanRunning()) {
-                    handler.stopScan();
+                if (bearHandler.isScanRunning()) {
+                    bearHandler.stopScan();
                 }
                 ((ArActivity) getActivity()).showArSceneWithoutTracking(226620);  //some marker id for example
             }
         });
 
-        dlMain = (DrawerLayout) view.findViewById(R.id.dlMain);
-        toolbar = (Toolbar) view.findViewById(R.id.toolbar);
-        nvMain = (NavigationView) view.findViewById(R.id.nvMain);
+        dlMain = view.findViewById(R.id.dlMain);
+        toolbar = view.findViewById(R.id.toolbar);
+        nvMain = view.findViewById(R.id.nvMain);
 
         toggle = new ActionBarDrawerToggle(getActivity(), dlMain, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
 
@@ -105,15 +96,13 @@ public class MainFragment extends Fragment implements NavigationView.OnNavigatio
     @Override
     public void onResume() {
         super.onResume();
-        handler.addFlashListener(flashListener);
-        handler.addNetworkListener(networkListener);
+        bearHandler.addFlashListener(flashListener);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        handler.removeFlashListener(flashListener);
-        handler.removeNetworkListener(networkListener);
+        bearHandler.removeFlashListener(flashListener);
     }
 
     public void closeDrawer() {

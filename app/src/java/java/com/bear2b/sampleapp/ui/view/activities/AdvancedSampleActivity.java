@@ -15,9 +15,8 @@ import android.widget.Toast;
 
 import com.bear.common.sdk.BearSdk;
 import com.bear.common.sdk.BearCallback;
-import com.bear.common.sdk.BearHandler;
+import com.bear.common.sdk.IBearHandler;
 import com.bear.common.sdk.ui.activities.main.ArActivity;
-import com.bear.common.sdk.ui.activities.main.InitStatusListener;
 import com.bear2b.sampleapp.R;
 import com.bear2b.sampleapp.ui.view.fragments.HistoryFragment;
 import com.bear2b.sampleapp.ui.view.fragments.MainFragment;
@@ -32,7 +31,7 @@ import java.util.List;
 public class AdvancedSampleActivity extends ArActivity {
 
     private FragmentManager fragmentManager = getFragmentManager();
-    public BearHandler handler = getHandler();
+    public IBearHandler bearHandler = getBearHandler();
 
     @IdRes
     private int container = R.id.container;
@@ -48,6 +47,22 @@ public class AdvancedSampleActivity extends ArActivity {
     }
 
     private BearCallback newCallback = new BearCallback() {
+        @Override
+        public void onArViewInitialized() {
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    new AlertDialog.Builder(AdvancedSampleActivity.this)
+                            .setMessage("ArView initialization completed")
+                            .show();
+                }
+            });
+            fragmentManager
+                    .beginTransaction()
+                    .add(container, MainFragment.newInstance())
+                    .commit();
+        }
+
         @Override
         public void onMarkerRecognized(final int i, @NonNull final List<Integer> list) {
             new Handler(Looper.getMainLooper()).post(new Runnable() {
@@ -80,13 +95,13 @@ public class AdvancedSampleActivity extends ArActivity {
         }
 
         @Override
-        public void onError(@NonNull final Throwable t, final boolean isMarkerFromScan) {
+        public void onError(@NonNull final Throwable t) {
             new Handler(Looper.getMainLooper()).post(new Runnable() {
                 @Override
                 public void run() {
                     new AlertDialog.Builder(AdvancedSampleActivity.this)
-                            .setTitle("onError while recognizing marker")
-                            .setMessage("isMarkerFromScan = " + isMarkerFromScan + " error = " + t.toString())
+                            .setTitle("Error occurred")
+                            .setMessage(t.toString())
                             .show();
                 }
             });
@@ -96,25 +111,13 @@ public class AdvancedSampleActivity extends ArActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        handler.registerBearCallback(newCallback);
-        addArViewInitListener(new InitStatusListener() {
-            @Override
-            public void onInitComplete() {
-                new AlertDialog.Builder(AdvancedSampleActivity.this)
-                        .setMessage("ArView initialization completed")
-                        .show();
-                fragmentManager
-                        .beginTransaction()
-                        .add(container, MainFragment.newInstance())
-                        .commit();
-            }
-        });
+        bearHandler.registerBearCallback(newCallback);
         System.out.println(BearSdk.getInstance(this).getDeviceId());
     }
 
     @Override
     protected void onDestroy() {
-        handler.unregisterBearCallback(newCallback);
+        bearHandler.unregisterBearCallback(newCallback);
         super.onDestroy();
     }
 
@@ -131,7 +134,7 @@ public class AdvancedSampleActivity extends ArActivity {
 
     @Override
     public void onBackPressed() {
-        if (fragmentManager.getBackStackEntryCount() == 1) handler.cleanView();
+        if (fragmentManager.getBackStackEntryCount() == 1) bearHandler.cleanView();
         super.onBackPressed();
     }
 

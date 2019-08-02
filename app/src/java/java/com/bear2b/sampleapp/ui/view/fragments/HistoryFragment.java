@@ -32,7 +32,7 @@ public class HistoryFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        ((AdvancedSampleActivity) getActivity()).getHandler().cleanView();
+        ((AdvancedSampleActivity) getActivity()).getBearHandler().cleanView();
     }
 
     public static HistoryFragment newInstance() {

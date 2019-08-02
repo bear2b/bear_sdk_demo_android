@@ -9,13 +9,14 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ShareCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.bear.common.sdk.BearHandler;
+import com.bear.common.sdk.IBearHandler;
 import com.bear2b.sampleapp.R;
 import com.bear2b.sampleapp.ui.view.activities.AdvancedSampleActivity;
 
@@ -29,12 +30,12 @@ import permissions.dispatcher.RuntimePermissions;
 @RuntimePermissions
 public class SuccessScanFragment extends Fragment {
 
-    private BearHandler handler;
+    private IBearHandler bearHandler;
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        handler = ((AdvancedSampleActivity) getActivity()).getHandler();
+        bearHandler = ((AdvancedSampleActivity) getActivity()).getBearHandler();
     }
 
     @Nullable
@@ -46,14 +47,14 @@ public class SuccessScanFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Button btnScreenshot = (Button) view.findViewById(R.id.btnScreenshot);
+        Button btnScreenshot = view.findViewById(R.id.btnScreenshot);
         btnScreenshot.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 SuccessScanFragmentPermissionsDispatcher.shareImageWithCheck(SuccessScanFragment.this);
             }
         });
-        Button btnSamplePausingFragment = (Button) view.findViewById(R.id.btnSamplePausingFragment);
+        Button btnSamplePausingFragment = view.findViewById(R.id.btnSamplePausingFragment);
         btnSamplePausingFragment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -66,7 +67,7 @@ public class SuccessScanFragment extends Fragment {
     @Override
     public void onPause() {
         // Screenshot may not be completed when fragment is paused
-        handler.cancelScreenshot();
+        bearHandler.cancelScreenshot();
         super.onPause();
     }
 
@@ -76,7 +77,7 @@ public class SuccessScanFragment extends Fragment {
 
     @NeedsPermission({"android.permission.READ_EXTERNAL_STORAGE", "android.permission.WRITE_EXTERNAL_STORAGE"})
     public void shareImage() {
-        handler.takeScreenshot(new BearHandler.ScreenshotCallback() {
+        bearHandler.takeScreenshot(new IBearHandler.ScreenshotCallback() {
             @Override
             public void onComplete(@NonNull Uri imageUri) {
                 ShareCompat.IntentBuilder
@@ -84,6 +85,11 @@ public class SuccessScanFragment extends Fragment {
                         .setType("image/*")
                         .setStream(imageUri)
                         .startChooser();
+            }
+
+            @Override
+            public void onCancel() {
+                Log.e("DEV", "Screenshot has been cancelled");
             }
         });
     }

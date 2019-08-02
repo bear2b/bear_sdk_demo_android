@@ -13,7 +13,6 @@ import android.widget.Toast
 import com.bear.common.sdk.BearCallback
 import com.bear.common.sdk.BearSdk
 import com.bear.common.sdk.ui.activities.main.ArActivity
-import com.bear.common.sdk.ui.activities.main.InitStatusListener
 import com.bear2b.sampleapp.R
 import com.bear2b.sampleapp.ui.view.fragments.*
 import org.jetbrains.annotations.NotNull
@@ -28,6 +27,18 @@ class AdvancedSampleActivity : ArActivity() {
     override val scanLineColor = Color.rgb(80,44,108)
 
     private var newCallback = object : BearCallback {
+
+        override fun onArViewInitialized() {
+            Handler(Looper.getMainLooper()).post {
+                AlertDialog.Builder(this@AdvancedSampleActivity)
+                        .setMessage("ArView initialization completed")
+                        .show()
+            }
+            supportFragmentManager
+                    .beginTransaction()
+                    .add(mContainer, MainFragment.newInstance())
+                    .commit()
+        }
 
         override fun onMarkerRecognized(markerId: Int, @NonNull assetsId: List<Int>) {
             Handler(Looper.getMainLooper()).post {
@@ -51,11 +62,11 @@ class AdvancedSampleActivity : ArActivity() {
             Toast.makeText(this@AdvancedSampleActivity, "onAssetClicked id = $assetId", Toast.LENGTH_SHORT).show()
         }
 
-        override fun onError(@NonNull error: Throwable, isMarkerFromScan: Boolean) {
+        override fun onError(@NonNull error: Throwable) {
             Handler(Looper.getMainLooper()).post {
                 AlertDialog.Builder(this@AdvancedSampleActivity)
-                        .setTitle("onError while recognizing marker")
-                        .setMessage("isMarkerFromScan = $isMarkerFromScan error = $error")
+                        .setTitle("Error occurred")
+                        .setMessage(error.toString())
                         .show()
             }
         }
@@ -63,23 +74,12 @@ class AdvancedSampleActivity : ArActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        handler.registerBearCallback(newCallback)
-        addArViewInitListener(object : InitStatusListener {
-            override fun onInitComplete() {
-                AlertDialog.Builder(this@AdvancedSampleActivity)
-                        .setMessage("ArView initialization completed")
-                        .show()
-                supportFragmentManager
-                        .beginTransaction()
-                        .add(mContainer, MainFragment.newInstance())
-                        .commit()
-            }
-        })
+        bearHandler.registerBearCallback(newCallback)
         System.out.println(BearSdk.getInstance(this).deviceId)
     }
 
     override fun onDestroy() {
-        handler.unregisterBearCallback(newCallback)
+        bearHandler.unregisterBearCallback(newCallback)
         super.onDestroy()
     }
 
@@ -91,7 +91,7 @@ class AdvancedSampleActivity : ArActivity() {
     override fun openWebView(@NotNull url: String) = replaceFragment(WebViewFragment.newInstance(url))
 
     override fun onBackPressed() {
-        if (supportFragmentManager.backStackEntryCount == 1) handler.cleanView()
+        if (supportFragmentManager.backStackEntryCount == 1) bearHandler.cleanView()
         super.onBackPressed()
     }
 

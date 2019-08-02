@@ -39,7 +39,7 @@ public class WebViewFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        webView = (WebView) view.findViewById(R.id.webView);
+        webView = view.findViewById(R.id.webView);
         webView.setBackgroundColor(Color.TRANSPARENT);
         webView.clearCache(true);
         webView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);

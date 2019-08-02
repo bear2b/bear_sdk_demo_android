@@ -13,11 +13,9 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import com.bear.common.sdk.BearHandler
+import com.bear.common.sdk.IBearHandler
 import com.bear.common.sdk.listeners.flash.FlashStatus
 import com.bear.common.sdk.listeners.flash.FlashStatusListener
-import com.bear.common.sdk.listeners.network.NetworkStatus
-import com.bear.common.sdk.listeners.network.NetworkStatusListener
 import com.bear.common.sdk.ui.activities.main.ArActivity
 import com.bear2b.sampleapp.R
 import com.bear2b.sampleapp.ui.view.activities.AdvancedSampleActivity
@@ -28,39 +26,34 @@ import org.jetbrains.annotations.Nullable
 class MainFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener {
 
     lateinit var toggle : ActionBarDrawerToggle
-    lateinit var handler : BearHandler
+    lateinit var bearHandler : IBearHandler
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
-        handler = (activity as AdvancedSampleActivity).handler
+        bearHandler = (activity as AdvancedSampleActivity).bearHandler
     }
 
     @Nullable
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
-        inflater.inflate(R.layout.main_fragment, container, false)
-
-    private val networkListener: NetworkStatusListener = object : NetworkStatusListener {
-        override fun onStatusChanged(status: NetworkStatus) =
-            Toast.makeText(activity, "networkStatus = ${status.name}", Toast.LENGTH_SHORT).show()
-    }
+            inflater.inflate(R.layout.main_fragment, container, false)
 
     private val flashListener: FlashStatusListener = object : FlashStatusListener {
         override fun onStatusChanged(status: FlashStatus) =
-            Toast.makeText(activity, "FlashStatus = ${status.name}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(activity, "FlashStatus = ${status.name}", Toast.LENGTH_SHORT).show()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        btnStartScan.setOnClickListener { handler.startScan() }
+        btnStartScan.setOnClickListener { bearHandler.startScan() }
         btnFlash.setOnClickListener {
-            when (handler.isFlashEnabled()) {
-                true -> handler.disableFlash()
-                false -> handler.enableFlash()
+            when (bearHandler.isFlashEnabled()) {
+                true -> bearHandler.disableFlash()
+                false -> bearHandler.enableFlash()
             }
         }
 
         btnMarker.setOnClickListener {
-            if (handler.isScanRunning()) handler.stopScan()
+            if (bearHandler.isScanRunning()) bearHandler.stopScan()
             (activity as ArActivity).showArSceneWithoutTracking(226620) //some marker id for example
         }
 
@@ -73,14 +66,12 @@ class MainFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener
 
     override fun onResume() {
         super.onResume()
-        handler.addFlashListener(flashListener)
-        handler.addNetworkListener(networkListener)
+        bearHandler.addFlashListener(flashListener)
     }
 
     override fun onPause() {
         super.onPause()
-        handler.removeFlashListener(flashListener)
-        handler.removeNetworkListener(networkListener)
+        bearHandler.removeFlashListener(flashListener)
     }
 
     private fun closeDrawer() {

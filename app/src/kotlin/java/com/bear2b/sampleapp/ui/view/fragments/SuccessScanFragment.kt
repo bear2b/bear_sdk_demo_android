@@ -5,14 +5,15 @@ import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import com.bear.common.sdk.BearHandler
 import com.bear2b.sampleapp.ui.view.activities.AdvancedSampleActivity
 import android.support.annotation.Nullable
 import android.support.v4.app.ShareCompat
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import com.bear.common.sdk.IBearHandler
 import com.bear2b.sampleapp.R
 import kotlinx.android.synthetic.main.success_scan_fragment.*
 import permissions.dispatcher.NeedsPermission
@@ -25,16 +26,16 @@ import permissions.dispatcher.RuntimePermissions
 @RuntimePermissions
 class SuccessScanFragment : Fragment() {
 
-    private lateinit var handler : BearHandler
+    private lateinit var bearHandler : IBearHandler
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
-        handler = (activity as AdvancedSampleActivity).handler
+        bearHandler = (activity as AdvancedSampleActivity).bearHandler
     }
 
     @Nullable
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
-        inflater.inflate(R.layout.success_scan_fragment, container,false)
+            inflater.inflate(R.layout.success_scan_fragment, container,false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -47,7 +48,7 @@ class SuccessScanFragment : Fragment() {
 
     override fun onPause() {
         // Screenshot may not be completed when fragment is paused
-        handler.cancelScreenshot()
+        bearHandler.cancelScreenshot()
         super.onPause()
     }
 
@@ -56,13 +57,17 @@ class SuccessScanFragment : Fragment() {
     }
 
     @NeedsPermission("android.permission.READ_EXTERNAL_STORAGE", "android.permission.WRITE_EXTERNAL_STORAGE")
-    fun shareImage() = handler.takeScreenshot(object : BearHandler.ScreenshotCallback {
+    fun shareImage() = bearHandler.takeScreenshot(object : IBearHandler.ScreenshotCallback {
         override fun onComplete(imageUri: Uri) {
             ShareCompat.IntentBuilder
                     .from(activity)
                     .setType("image/*")
                     .setStream(imageUri)
                     .startChooser()
+        }
+
+        override fun onCancel() {
+            Log.e("DEV", "Screenshot has been cancelled")
         }
     })
 
