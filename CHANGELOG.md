@@ -2,6 +2,19 @@
 
 ---
 
+## [3.0.0](https://github.com/bear2b/bear_sdk_demo_android/releases/tag/3.0.0)
+
+#### Added:
+* 64 bits support
+
+#### Deprecated:
+* Android 4.4 support as been remove, app should target API 21
+
+## [2.0.12](https://github.com/bear2b/bear_sdk_demo_android/releases/tag/2.0.12)
+
+#### Fixes:
+* update SDK internal dependencies
+
 ## [2.0.11](https://github.com/bear2b/bear_sdk_demo_android/releases/tag/2.0.11)
 
 #### Fixes:
