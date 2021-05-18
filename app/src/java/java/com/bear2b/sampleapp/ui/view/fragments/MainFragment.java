@@ -3,27 +3,39 @@ package com.bear2b.sampleapp.ui.view.fragments;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.NavigationView;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.widget.Toolbar;
+import android.view.DisplayCutout;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.bear.common.sdk.IBearHandler;
 import com.bear.common.sdk.listeners.flash.FlashStatus;
 import com.bear.common.sdk.listeners.flash.FlashStatusListener;
+import com.bear.common.sdk.listeners.scan.ArState;
+import com.bear.common.sdk.listeners.scan.ArStateChangeRegistrar;
 import com.bear.common.sdk.ui.activities.main.ArActivity;
 import com.bear2b.sampleapp.R;
 import com.bear2b.sampleapp.ui.view.activities.AdvancedSampleActivity;
 import com.bear2b.sampleapp.ui.view.activities.ExampleActivity;
+import com.google.android.material.navigation.NavigationView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
+
+import static com.bear2b.sampleapp.utils.extension.ExtensionsKt.setCutoutMargin;
 
 public class MainFragment extends Fragment implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -31,7 +43,11 @@ public class MainFragment extends Fragment implements NavigationView.OnNavigatio
     Toolbar toolbar;
     NavigationView nvMain;
     ActionBarDrawerToggle toggle;
+    Button btnStartScan;
+
     IBearHandler bearHandler;
+
+    CompositeDisposable subscription = new CompositeDisposable();
 
     @Override
     public void onAttach(Activity activity) {
@@ -55,10 +71,12 @@ public class MainFragment extends Fragment implements NavigationView.OnNavigatio
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        view.findViewById(R.id.btnStartScan).setOnClickListener(new View.OnClickListener() {
+        btnStartScan = view.findViewById(R.id.btnStartScan);
+        btnStartScan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                bearHandler.startScan();
+                if (bearHandler.getCurrentArState() == ArState.IDLE) bearHandler.startScan();
+                else if (bearHandler.getCurrentArState() == ArState.SCANNING) bearHandler.stopScan();
             }
         });
         view.findViewById(R.id.btnFlash).setOnClickListener(new View.OnClickListener() {
@@ -72,12 +90,21 @@ public class MainFragment extends Fragment implements NavigationView.OnNavigatio
             }
         });
 
+        subscription.add(bearHandler.getArStateObservingSubject()        //Example how to use arStateObservingSubject for UI changes
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<ArStateChangeRegistrar>() {
+                    @Override
+                    public void accept(ArStateChangeRegistrar arStateChangeRegistrar) {
+                        if (arStateChangeRegistrar.getNewState() == ArState.SCANNING) btnStartScan.setText("Stop Scan");
+                        else btnStartScan.setText("Start Scan");
+                    }
+                }));
+
         view.findViewById(R.id.btnMarker).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (bearHandler.isScanRunning()) {
-                    bearHandler.stopScan();
-                }
+                if (bearHandler.getCurrentArState() == ArState.SCANNING) bearHandler.stopScan();
                 ((ArActivity) getActivity()).showArSceneWithoutTracking(226620);  //some marker id for example
             }
         });
@@ -91,6 +118,11 @@ public class MainFragment extends Fragment implements NavigationView.OnNavigatio
         dlMain.addDrawerListener(toggle);
         toggle.syncState();
         nvMain.setNavigationItemSelectedListener(this);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            DisplayCutout displayCutout = getActivity().getWindow().getDecorView().getRootWindowInsets().getDisplayCutout();
+            if (displayCutout != null)
+                setCutoutMargin(view.findViewById(R.id.cutContainer), displayCutout.getSafeInsetLeft(), displayCutout.getSafeInsetTop(), displayCutout.getSafeInsetRight(), displayCutout.getSafeInsetBottom());
+        }
     }
 
     @Override
