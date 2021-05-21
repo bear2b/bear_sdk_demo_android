@@ -1,4 +1,4 @@
-## Latest BEARSDK build 3.0.0
+## Latest BEARSDK build 3.2.1
 Detailed explanations can be found at:
 https://developer.bear2b.com/docs/sdk-android/
 
@@ -7,7 +7,7 @@ https://developer.bear2b.com/docs/sdk-android/
 maven { url 'https://s3-eu-west-1.amazonaws.com/mobile-dev.bear2b.com/bearsdk' }
 
 dependencies {
-    compile('com.bear:bearsdk:3.0.0@aar') {
+    compile('com.bear:bearsdk:3.2.1@aar') {
         transitive = true
     }
 }

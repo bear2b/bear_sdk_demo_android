@@ -1,20 +1,15 @@
 package com.bear2b.sampleapp.ui.view.activities;
 
-import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.support.annotation.IdRes;
-import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.bear.common.sdk.BearSdk;
 import com.bear.common.sdk.BearCallback;
+import com.bear.common.sdk.BearSdk;
 import com.bear.common.sdk.IBearHandler;
 import com.bear.common.sdk.ui.activities.main.ArActivity;
 import com.bear2b.sampleapp.R;
@@ -27,6 +22,9 @@ import com.bear2b.sampleapp.ui.view.fragments.WebViewFragment;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+
+import androidx.annotation.IdRes;
+import androidx.annotation.NonNull;
 
 public class AdvancedSampleActivity extends ArActivity {
 
@@ -48,15 +46,13 @@ public class AdvancedSampleActivity extends ArActivity {
 
     private BearCallback newCallback = new BearCallback() {
         @Override
+        public void onMarkerWithUnsupportedAsset() {
+            showAlert("onMarkerWithUnsupportedAsset");
+        }
+
+        @Override
         public void onArViewInitialized() {
-            new Handler(Looper.getMainLooper()).post(new Runnable() {
-                @Override
-                public void run() {
-                    new AlertDialog.Builder(AdvancedSampleActivity.this)
-                            .setMessage("ArView initialization completed")
-                            .show();
-                }
-            });
+            showAlert("ArView initialization completed");
             fragmentManager
                     .beginTransaction()
                     .add(container, MainFragment.newInstance())
@@ -65,46 +61,23 @@ public class AdvancedSampleActivity extends ArActivity {
 
         @Override
         public void onMarkerRecognized(final int i, @NonNull final List<Integer> list) {
-            new Handler(Looper.getMainLooper()).post(new Runnable() {
-                @Override
-                public void run() {
-                    new AlertDialog.Builder(AdvancedSampleActivity.this)
-                            .setTitle("onMarkerRecognized")
-                            .setMessage("marker id = " + i + " assets id = " + list.toString())
-                            .show();
-                }
-            });
+            showAlert("onMarkerRecognized, marker id = " + i + " assets id = " + list.toString());
             replaceFragment(SuccessScanFragment.newInstance());
         }
 
         @Override
         public void onMarkerNotRecognized() {
-            new Handler(Looper.getMainLooper()).post(new Runnable() {
-                @Override
-                public void run() {
-                    new AlertDialog.Builder(AdvancedSampleActivity.this)
-                            .setMessage("onMarkerNotRecognized")
-                            .show();
-                }
-            });
+            showAlert("onMarkerNotRecognized");
         }
 
         @Override
         public void onAssetClicked(final int i) {
-            Toast.makeText(AdvancedSampleActivity.this, "onAssetClicked id = " + i, Toast.LENGTH_SHORT).show();
+            showAlert("onAssetClicked " + i);
         }
 
         @Override
         public void onError(@NonNull final Throwable t) {
-            new Handler(Looper.getMainLooper()).post(new Runnable() {
-                @Override
-                public void run() {
-                    new AlertDialog.Builder(AdvancedSampleActivity.this)
-                            .setTitle("Error occurred")
-                            .setMessage(t.toString())
-                            .show();
-                }
-            });
+            showAlert("Error occurred: " + t.toString());
         }
     };
 
@@ -134,7 +107,7 @@ public class AdvancedSampleActivity extends ArActivity {
 
     @Override
     public void onBackPressed() {
-        if (fragmentManager.getBackStackEntryCount() == 1) bearHandler.cleanView();
+        if (fragmentManager.getBackStackEntryCount() == 1) bearHandler.cleanArView();
         super.onBackPressed();
     }
 
@@ -152,5 +125,15 @@ public class AdvancedSampleActivity extends ArActivity {
                 .replace(container, fragment)
                 .addToBackStack(null)
                 .commit();
+    }
+
+    @Override
+    public void showAlert(@NotNull String message) {
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void showAlert(int messageId) {
+        showAlert(getString(messageId));
     }
 }

@@ -2,6 +2,17 @@
 
 ---
 
+## [3.2.1](https://github.com/bear2b/bear_sdk_demo_android/releases/tag/3.2.0)
+
+#### Added:
+* disable using IDFA by default and add ability to re-enable it in config;
+* Show an error if the asset type is not supported;
+* Android Q compatibility (29 API)
+
+#### Fixes:
+* Requests in app doesn't work after token expiration;
+* Screenshot button doesn't work;
+
 ## [3.0.0](https://github.com/bear2b/bear_sdk_demo_android/releases/tag/3.0.0)
 
 #### Added:

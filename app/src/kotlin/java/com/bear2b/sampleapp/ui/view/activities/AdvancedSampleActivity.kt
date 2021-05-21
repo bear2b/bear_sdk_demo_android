@@ -1,15 +1,12 @@
 package com.bear2b.sampleapp.ui.view.activities
 
-import android.app.AlertDialog
 import android.graphics.Color
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.support.annotation.IdRes
-import android.support.annotation.NonNull
-import android.support.v4.app.Fragment
-import android.view.ViewGroup.*
+import android.view.ViewGroup.LayoutParams
 import android.widget.Toast
+import androidx.annotation.IdRes
+import androidx.annotation.NonNull
+import androidx.fragment.app.Fragment
 import com.bear.common.sdk.BearCallback
 import com.bear.common.sdk.BearSdk
 import com.bear.common.sdk.ui.activities.main.ArActivity
@@ -20,62 +17,37 @@ import org.jetbrains.annotations.NotNull
 class AdvancedSampleActivity : ArActivity() {
 
     @IdRes
-    private var mContainer = R.id.container
+    private val container = R.id.container
 
     override val scanTimeout = 10
 
-    override val scanLineColor = Color.rgb(80,44,108)
+    override val scanLineColor = Color.rgb(80, 44, 108)
 
-    private var newCallback = object : BearCallback {
-
+    private val newCallback = object : BearCallback {
         override fun onArViewInitialized() {
-            Handler(Looper.getMainLooper()).post {
-                AlertDialog.Builder(this@AdvancedSampleActivity)
-                        .setMessage("ArView initialization completed")
-                        .show()
-            }
+            showAlert("ArView initialization completed")
             supportFragmentManager
                     .beginTransaction()
-                    .add(mContainer, MainFragment.newInstance())
+                    .add(container, MainFragment.newInstance())
                     .commit()
         }
 
         override fun onMarkerRecognized(markerId: Int, @NonNull assetsId: List<Int>) {
-            Handler(Looper.getMainLooper()).post {
-                AlertDialog.Builder(this@AdvancedSampleActivity)
-                        .setTitle("onMarkerRecognized")
-                        .setMessage("marker id = $markerId assets id = $assetsId")
-                        .show()
-            }
+            showAlert("onMarkerRecognized marker id = $markerId assets id = $assetsId")
             replaceFragment(SuccessScanFragment.newInstance())
         }
 
-        override fun onMarkerNotRecognized() {
-            Handler(Looper.getMainLooper()).post {
-                AlertDialog.Builder(this@AdvancedSampleActivity)
-                        .setMessage("onMarkerNotRecognized")
-                        .show()
-            }
-        }
+        override fun onMarkerNotRecognized() = showAlert("onMarkerNotRecognized")
 
-        override fun onAssetClicked(assetId: Int) {
-            Toast.makeText(this@AdvancedSampleActivity, "onAssetClicked id = $assetId", Toast.LENGTH_SHORT).show()
-        }
+        override fun onAssetClicked(assetId: Int) = showAlert("onAssetClicked $assetId")
 
-        override fun onError(@NonNull error: Throwable) {
-            Handler(Looper.getMainLooper()).post {
-                AlertDialog.Builder(this@AdvancedSampleActivity)
-                        .setTitle("Error occurred")
-                        .setMessage(error.toString())
-                        .show()
-            }
-        }
+        override fun onError(@NonNull error: Throwable) = showAlert("Error occurred: $error")
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         bearHandler.registerBearCallback(newCallback)
-        System.out.println(BearSdk.getInstance(this).deviceId)
+        println(BearSdk.getInstance(this).deviceId)
     }
 
     override fun onDestroy() {
@@ -91,7 +63,7 @@ class AdvancedSampleActivity : ArActivity() {
     override fun openWebView(@NotNull url: String) = replaceFragment(WebViewFragment.newInstance(url))
 
     override fun onBackPressed() {
-        if (supportFragmentManager.backStackEntryCount == 1) bearHandler.cleanView()
+        if (supportFragmentManager.backStackEntryCount == 1) bearHandler.cleanArView()
         super.onBackPressed()
     }
 
@@ -99,11 +71,19 @@ class AdvancedSampleActivity : ArActivity() {
 
     fun showSamplePausingFragment() = replaceFragment(SamplePausingFragment.newInstance())
 
-    private fun replaceFragment(fragment : Fragment) {
+    private fun replaceFragment(fragment: Fragment) {
         supportFragmentManager
                 .beginTransaction()
-                .replace(mContainer, fragment)
+                .replace(container, fragment)
                 .addToBackStack(null)
                 .commit()
+    }
+
+    override fun showAlert(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+    }
+
+    override fun showAlert(messageId: Int) {
+        showAlert(getString(messageId))
     }
 }

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="ProgressBar" parent="Theme.AppCompat.DayNight">
+        <item name="android:layout_width">@dimen/progressbar_size</item>
+        <item name="android:layout_height">@dimen/progressbar_size</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:layout_centerInParent">true</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:indeterminate">true</item>
+    </style>
+
+</resources>
