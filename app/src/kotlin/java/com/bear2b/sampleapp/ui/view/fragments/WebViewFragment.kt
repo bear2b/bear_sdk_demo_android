@@ -44,7 +44,7 @@ class WebViewFragment : Fragment() {
                 return true
             }
         }
-        webView.loadUrl(url)
+        url?.let{ webView.loadUrl(it) }
     }
 
     private fun initWebChromeClient() {
